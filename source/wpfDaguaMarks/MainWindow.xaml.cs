@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Drawing.Imaging;
 using System.Data;
 using Microsoft.Win32;
@@ -23,6 +12,14 @@ using System.Diagnostics;
 
 namespace wpfDaguaMarks
 {
+    /*
+     * Desenvolvido por Matheus Henrique Azambuja dos Santos <matheushenrique.ads@gmaill.com>
+     * Em meados de 2014 em C# Windows Forms.
+     * Melhores e arrumei algumas coisas e o coloquei em WPF.
+     * <3
+     *  
+     **/
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -33,39 +30,19 @@ namespace wpfDaguaMarks
         System.Drawing.Image imgOri, imgMark;
         ImageFormat Formato;
         int Total;
-        DataTable dtArquivos;
         int HeightAjus = 0, WidthAjus = 0;
         VMListaImagens lstImgs = new VMListaImagens();
-
-        //List<ImageItem> lstImgItems = new List<ImageItem>();
-        List<String> listImgs = new List<string>();
-
+        
         // OPEN DIALOGS
         OpenFileDialog adcImagemDialog = new OpenFileDialog();
 
         int ETAPA = 0;
-
-        
-
-        public class VMListaImagens
-        {
-            public VMListaImagens()
-            {
-                Items = new List<ImageItem>();
-            }
-            public List<ImageItem> Items { get; set; }
-        }
 
         public MainWindow()
         {
             InitializeComponent();            
             listView.DataContext = null;
             Formato = ImageFormat.Png;
-            using (dtArquivos = new DataTable("files"))
-            {
-                dtArquivos.Columns.Add("ori", typeof(string));
-                dtArquivos.Columns.Add("nome", typeof(string));
-            }
             cbTransparencia.IsEnabled = true;
             cbTransparencia.IsChecked = true;
             rbTranspHEX.IsEnabled = true;
@@ -115,11 +92,6 @@ namespace wpfDaguaMarks
                                     item.Nome = System.IO.Path.GetFileName(file).ToLower().Replace(".jpg", null).Replace(".jpeg", null).Replace(".png", null).Replace(".tiff", null).Replace(".bmp", null);
                                     item.Caminho = file;
                                     lstImgs.Items.Add(item);
-
-
-                                    dtArquivos.Rows.Add(file, System.IO.Path.GetFileName(file).ToLower().Replace(".jpg", null).Replace(".jpeg", null).Replace(".png", null).Replace(".tiff", null).Replace(".bmp", null));
-                                    //listImgs.Items.Add(System.IO.Path.GetFileName(file)); < ANTIGO
-                                    listImgs.Add(System.IO.Path.GetFileName(file));
                                 }
                             }
                         }
@@ -130,14 +102,7 @@ namespace wpfDaguaMarks
                     }
                     listView.DataContext = null;
                     listView.DataContext = lstImgs;
-
-                    // Listbox Add
-                    //listImgs.Items.Add(adcImagemDialog.FileName);
-                    /*listImgs.Items.Add(adcImagemDialog.SafeFileName);
-                    using (dtArquivos)
-                    {
-                        dtArquivos.Rows.Add(adcImagemDialog.FileName, adcImagemDialog.SafeFileName.ToLower().Replace(".jpg", null).Replace(".jpeg", null).Replace(".png", null).Replace(".tiff", null).Replace(".bmp", null));
-                    }*/
+                   
                 }
             }
             catch (Exception ex)
@@ -190,12 +155,8 @@ namespace wpfDaguaMarks
                 Total = lstImgs.Items.Count;
                 foreach (ImageItem imgItem in listView.Items)
                 {
-
-                    //MessageBox.Show(item.ToLower().Replace(".jpg", null).Replace(".jpeg", null).Replace(".png", null).Replace(".tiff", null).Replace(".bmp", null));
                     // Declarações para Extrair Imagens
                     OriArquivo = imgItem.Caminho;
-                    //NomeDoArquivo = Nomes[].ToString();
-                    // OriArquivo = item;
                     MarkFile = tbCaminhoMark.Text;
                     DestinoArquivo = tbDestino.Text + "\\" + imgItem.Nome;
 
@@ -570,31 +531,7 @@ namespace wpfDaguaMarks
             else
                 MessageBox.Show("Erro, Marca nao Selecionada.");
         }
-
-
-        private void remImagensClick()
-        {
-            if (lstImgs.Items.Count > 0)
-            {
-                try
-                {
-                    foreach (DataRow dtFiles in dtArquivos.Rows)
-                    {
-                        string ori = dtFiles[1].ToString();
-                        ImageItem ok = lstImgs.Items.Find(x => x.Caminho == ori);
-                        if (ok != null)
-                        {
-                            lstImgs.Items.Remove(ok);
-                        }
-                    }
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show("Erro ao Deletar: " + ex.Message, "Erro");
-                }
-            }
-        }
-
+        
         private void btnAddImg_Click(object sender, RoutedEventArgs e)
         {
             addImagemClick();
@@ -621,6 +558,15 @@ namespace wpfDaguaMarks
         }
     }
 
+    
+    public class VMListaImagens
+    {
+        public VMListaImagens()
+        {
+            Items = new List<ImageItem>();
+        }
+        public List<ImageItem> Items { get; set; }
+    }
 
     public class ImageItem
     {
